@@ -118,7 +118,7 @@ public class Servidor extends javax.swing.JFrame {
             servidor.serverSocket.receive(receberPacote);
             
             String msgDecode  = new String(receberPacote.getData(), "UTF-8");
-            System.out.println("Mensagem recebida: " + msgDecode);
+            System.out.println("Pacote recebido: " + msgDecode);
         }
         /**
          * Fazer: verificar informações e alterar valores dos labels de acordo com elas

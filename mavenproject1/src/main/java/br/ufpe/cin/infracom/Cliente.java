@@ -271,19 +271,42 @@ public class Cliente extends javax.swing.JFrame {
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
         byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
+        
         for (int i = 0; i < Integer.parseInt(this.numPacotes.getText()); i++) {
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
             clientSocket.send(enviarPacote);
         }
         clientSocket.close();
     }
-    
-    private void enviarDuracaoTeste(){
+    //Testar
+    private void enviarDuracaoTeste() throws SocketException, UnknownHostException, IOException{
+        boolean temTempo = true;
+        DatagramSocket clientSocket = new DatagramSocket();
+        InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
+        byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
+        long tempo = System.currentTimeMillis();
         
+        while (temTempo) {            
+            DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
+            clientSocket.send(enviarPacote);
+            if((System.currentTimeMillis() - tempo) >= Integer.parseInt(this.duracaoTeste.getText())){
+                temTempo = false;
+            }
+        }
+        clientSocket.close();
     }
-    
-    private void enviarTotalBytes(){
+    //Testar
+    private void enviarTotalBytes() throws SocketException, UnknownHostException, IOException{
+        int x = (int) Math.ceil(Integer.parseInt(this.totalBytes.getText()) / Integer.parseInt(this.tamanhoMsg.getText()));
+        DatagramSocket clientSocket = new DatagramSocket();
+        InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
+        byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
         
+        for (int i = 0; i < x; i++) {
+            DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
+            clientSocket.send(enviarPacote);
+        }
+        clientSocket.close();
     }
     
     public static void main(String args[]) {
