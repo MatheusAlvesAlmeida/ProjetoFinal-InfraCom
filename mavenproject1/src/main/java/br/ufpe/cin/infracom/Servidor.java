@@ -13,7 +13,7 @@ public class Servidor extends javax.swing.JFrame {
    
     public Servidor() throws SocketException {
         this.serverSocket = new DatagramSocket(this.porta);
-        this.receberDados = new byte[Integer.MAX_VALUE];
+        this.receberDados = new byte[1000];
         initComponents();
     }
 
@@ -102,7 +102,7 @@ public class Servidor extends javax.swing.JFrame {
 
     public static void main(String args[]) throws SocketException, IOException {
         Servidor servidor = new Servidor();
-
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 servidor.setVisible(true);
@@ -116,6 +116,9 @@ public class Servidor extends javax.swing.JFrame {
         while(true){
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
             servidor.serverSocket.receive(receberPacote);
+            
+            String msgDecode  = new String(receberPacote.getData(), "UTF-8");
+            System.out.println("Mensagem recebida: " + msgDecode);
         }
         /**
          * Fazer: verificar informações e alterar valores dos labels de acordo com elas
