@@ -111,6 +111,7 @@ public class Servidor extends javax.swing.JFrame {
         /**
          * Fazer: cliente enviar os pacotes de acordo com a opção escolhida
          * servidor identificar que os pacotes pararam de chegar
+         * Solução pro RTT: adicionar uma info extra com o tempo de saída
          */
         while(true){
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
@@ -118,6 +119,7 @@ public class Servidor extends javax.swing.JFrame {
         }
         /**
          * Fazer: verificar informações e alterar valores dos labels de acordo com elas
+         * criar conexão TCP com o cliente e realizar a troca de informações
          */
     }
 
