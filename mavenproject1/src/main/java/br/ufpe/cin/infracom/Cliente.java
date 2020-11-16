@@ -309,6 +309,10 @@ public class Cliente extends javax.swing.JFrame {
         clientSocket.close();
     }
     
+    private void inserirCabecalho(){
+        
+    }
+    
     public static void main(String args[]) {
         //Usar cabeçalho no envio de msgs
         Cliente cliente = new Cliente();
