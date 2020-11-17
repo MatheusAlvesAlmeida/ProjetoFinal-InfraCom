@@ -116,7 +116,6 @@ public class Servidor extends javax.swing.JFrame {
         while(true){
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
             servidor.serverSocket.receive(receberPacote);
-            
             String msgDecode  = new String(receberPacote.getData(), "UTF-8");
             System.out.println("Pacote recebido: " + msgDecode);
         }
