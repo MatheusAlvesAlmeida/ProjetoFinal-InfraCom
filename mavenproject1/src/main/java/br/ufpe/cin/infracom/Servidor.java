@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 /**
  *
@@ -113,11 +114,14 @@ public class Servidor extends javax.swing.JFrame {
          * servidor identificar que os pacotes pararam de chegar
          * Solução pro RTT: adicionar uma info extra com o tempo de saída
          */
-        while(true){
+        boolean ultimo = false, checagem = false;
+        while(!ultimo){
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
             servidor.serverSocket.receive(receberPacote);
+            byte[] pacote = receberPacote.getData();
+            
             String msgDecode  = new String(receberPacote.getData(), "UTF-8");
-            System.out.println("Pacote recebido: " + msgDecode);
+            System.out.println("Pacote recebido: " + Arrays.toString(pacote));
         }
         /**
          * Fazer: verificar informações e alterar valores dos labels de acordo com elas
