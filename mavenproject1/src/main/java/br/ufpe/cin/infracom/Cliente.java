@@ -1,9 +1,16 @@
 package br.ufpe.cin.infracom;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.BindException;
+import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
@@ -46,6 +53,19 @@ public class Cliente extends javax.swing.JFrame {
         duracaoTeste = new javax.swing.JTextField();
         numPacotes = new javax.swing.JTextField();
         totalBytes = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        resumoOpcoesLabel = new javax.swing.JLabel();
+        bytesEnviadosLabel = new javax.swing.JLabel();
+        bytesRecebidosLabel = new javax.swing.JLabel();
+        taxaTransLabel = new javax.swing.JLabel();
+        perdaPacotesLabel = new javax.swing.JLabel();
+        jitterLabel = new javax.swing.JLabel();
 
         jTextField6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -115,74 +135,148 @@ public class Cliente extends javax.swing.JFrame {
             }
         });
 
+        jLabel10.setText("Resultados do teste:");
+
+        jLabel11.setText("Resumo das opções:");
+
+        jLabel12.setText("Bytes Enviados:");
+
+        jLabel13.setText("Bytes recebidos:");
+
+        jLabel14.setText("Taxa de transferência:");
+
+        jLabel15.setText("% da perda de pacotes:");
+
+        jLabel16.setText("Jitter:");
+
+        resumoOpcoesLabel.setText("O cliente escolheu a opção");
+
+        bytesEnviadosLabel.setText("Foram enviados");
+
+        bytesRecebidosLabel.setText("Foram recebidos");
+
+        taxaTransLabel.setText("Resultado da taxa de trans");
+
+        perdaPacotesLabel.setText("Igual a");
+
+        jitterLabel.setText("métricas do jitter");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(portaDestino, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+                            .addComponent(ipDestino)))
+                    .addComponent(jLabel6)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(portaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel7)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(numPacotes, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel8)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(botaoIniciarTeste)
+                                    .addComponent(jLabel9)))
+                            .addGap(26, 26, 26)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(totalBytes, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(duracaoTeste, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jLabel5)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tamanhoMsg, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(perdaPacotesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel10)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(taxaTransLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jitterLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(portaDestino, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                                    .addComponent(ipDestino)))
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel1)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(portaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tamanhoMsg, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(numPacotes, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel9)
-                                    .addComponent(jLabel8))
-                                .addGap(26, 26, 26)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(totalBytes, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(duracaoTeste, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
-                        .addComponent(botaoIniciarTeste)))
-                .addContainerGap())
+                            .addComponent(jLabel11)
+                            .addComponent(jLabel12)
+                            .addComponent(jLabel13))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(resumoOpcoesLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+                            .addComponent(bytesEnviadosLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(bytesRecebidosLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(61, 61, 61))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(33, 33, 33)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(resumoOpcoesLabel))
+                .addGap(2, 2, 2)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(portaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(portaOrigem, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12)
+                    .addComponent(bytesEnviadosLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(portaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(ipDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(tamanhoMsg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(portaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(ipDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel13)
+                            .addComponent(bytesRecebidosLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel14)
+                            .addComponent(taxaTransLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel15)
+                            .addComponent(perdaPacotesLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(jitterLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel16)
+                                .addComponent(tamanhoMsg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -198,9 +292,10 @@ public class Cliente extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
-                    .addComponent(botaoIniciarTeste)
                     .addComponent(duracaoTeste, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botaoIniciarTeste)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -222,13 +317,13 @@ public class Cliente extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField6ActionPerformed
 
     private void botaoIniciarTesteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoIniciarTesteActionPerformed
-        if(this.portaOrigem.getText().isEmpty() || this.tamanhoMsg.getText().isEmpty() || 
-                this.ipDestino.getText().isEmpty() || this.tamanhoMsg.getText().isEmpty()){
+        if (this.portaOrigem.getText().isEmpty() || this.tamanhoMsg.getText().isEmpty()
+                || this.ipDestino.getText().isEmpty() || this.tamanhoMsg.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Você não digitou todas as informações necessárias");
-        }else{
-            if(this.numPacotes.getText().isEmpty() && this.duracaoTeste.getText().isEmpty() && this.totalBytes.getText().isEmpty()){
+        } else {
+            if (this.numPacotes.getText().isEmpty() && this.duracaoTeste.getText().isEmpty() && this.totalBytes.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Você não escolheu uma das 3 opções");
-            }else{
+            } else {
                 try {
                     this.iniciarEnvio();
                 } catch (IOException ex) {
@@ -257,25 +352,25 @@ public class Cliente extends javax.swing.JFrame {
         this.totalBytes.setText("");
     }//GEN-LAST:event_duracaoTesteKeyPressed
 
-    private void iniciarEnvio() throws UnknownHostException, IOException{
-        if(!this.numPacotes.getText().isEmpty()){
+    private void iniciarEnvio() throws UnknownHostException, IOException {
+        if (!this.numPacotes.getText().isEmpty()) {
             this.enviarNumPacotes();
-        }else if(!this.duracaoTeste.getText().isEmpty()){
+        } else if (!this.duracaoTeste.getText().isEmpty()) {
             this.enviarDuracaoTeste();
-        }else{
+        } else {
             this.enviarTotalBytes();
         }
     }
-    
-    private void enviarNumPacotes() throws SocketException, UnknownHostException, IOException{
+
+    private void enviarNumPacotes() throws SocketException, UnknownHostException, IOException {
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
         byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
         int qtePacotes = Integer.parseInt(this.numPacotes.getText()), qte = qtePacotes * Integer.parseInt(this.tamanhoMsg.getText());
         for (int i = 0; i < qtePacotes; i++) {
-            if(i == qtePacotes - 1){
+            if (i == qtePacotes - 1) {
                 enviarDados = this.inserirCabecalho(enviarDados, true, 1, qte, qtePacotes);
-            }else{
+            } else {
                 enviarDados = this.inserirCabecalho(enviarDados, false, 1, qte, qtePacotes);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
@@ -283,39 +378,41 @@ public class Cliente extends javax.swing.JFrame {
         }
         clientSocket.close();
     }
+
     //Testar
-    private void enviarDuracaoTeste() throws SocketException, UnknownHostException, IOException{
+    private void enviarDuracaoTeste() throws SocketException, UnknownHostException, IOException {
         boolean temTempo = true;
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
         byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
         long tempo = System.currentTimeMillis();
         int duracao = Integer.parseInt(this.duracaoTeste.getText()) * 1000;
-        
+
         for (int i = 0; temTempo; i++) {
-            if((System.currentTimeMillis() - tempo) >= duracao){
+            if ((System.currentTimeMillis() - tempo) >= duracao) {
                 temTempo = false;
                 enviarDados = this.inserirCabecalho(enviarDados, true, 2, i, Integer.parseInt(this.duracaoTeste.getText()));
-            }else{
+            } else {
                 enviarDados = this.inserirCabecalho(enviarDados, false, 2, i, Integer.parseInt(this.duracaoTeste.getText()));
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
             clientSocket.send(enviarPacote);
         }
-        
+
         clientSocket.close();
     }
+
     //Testar
-    private void enviarTotalBytes() throws SocketException, UnknownHostException, IOException{
+    private void enviarTotalBytes() throws SocketException, UnknownHostException, IOException {
         int x = (int) Math.ceil(Integer.parseInt(this.totalBytes.getText()) / Integer.parseInt(this.tamanhoMsg.getText()));
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
         byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
-        
+
         for (int i = 0; i < x; i++) {
-            if(i == x - 1){
+            if (i == x - 1) {
                 enviarDados = this.inserirCabecalho(enviarDados, true, 3, Integer.parseInt(this.totalBytes.getText()), 0);
-            }else{
+            } else {
                 enviarDados = this.inserirCabecalho(enviarDados, false, 3, Integer.parseInt(this.totalBytes.getText()), 0);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
@@ -323,24 +420,24 @@ public class Cliente extends javax.swing.JFrame {
         }
         clientSocket.close();
     }
-    
-    private byte[] inserirCabecalho(byte[] dados, boolean ultimo, int opcao, int qteBytes, int opcaoValor){
+
+    private byte[] inserirCabecalho(byte[] dados, boolean ultimo, int opcao, int qteBytes, int opcaoValor) {
         byte versao;
-        
-        if(ultimo){
-            versao = (byte)0b00010000; //versão 1 e ultimo pacote
-        }else{
-            versao = (byte)0b00000000; //versão 1
+
+        if (ultimo) {
+            versao = (byte) 0b00010000; //versão 1 e ultimo pacote
+        } else {
+            versao = (byte) 0b00000000; //versão 1
         }
-        
+
         dados[0] = versao;
         dados[1] = (byte) opcao;
         dados[2] = (byte) qteBytes;
         dados[3] = (byte) opcaoValor;
         return dados;
     }
-    
-    public static void main(String args[]) {
+
+    public static void main(String args[]) throws IOException, InterruptedException {
         //Usar cabeçalho no envio de msgs
         Cliente cliente = new Cliente();
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -348,15 +445,38 @@ public class Cliente extends javax.swing.JFrame {
                 cliente.setVisible(true);
             }
         });
+        try {
+            cliente.tmpSocket = new ServerSocket(3001);
+            System.out.println("Aguardando conexão do cliente...");
+            cliente.socket = cliente.tmpSocket.accept();
+
+            InputStreamReader entrada = new InputStreamReader(cliente.socket.getInputStream());
+            BufferedReader le = new BufferedReader(entrada);
+            String resposta = le.readLine();
+            System.out.println(resposta);
+        } catch (BindException e) {
+            System.out.println("Endereço ocupado");
+        } catch (Exception e) {
+            System.out.println("Erro " + e);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton botaoIniciarTeste;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JLabel bytesEnviadosLabel;
+    private javax.swing.JLabel bytesRecebidosLabel;
     private javax.swing.JTextField duracaoTeste;
     private javax.swing.JTextField ipDestino;
     private javax.swing.JDialog jDialog1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -368,10 +488,16 @@ public class Cliente extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextField jTextField6;
+    private javax.swing.JLabel jitterLabel;
     private javax.swing.JTextField numPacotes;
+    private javax.swing.JLabel perdaPacotesLabel;
     private javax.swing.JTextField portaDestino;
     private javax.swing.JTextField portaOrigem;
+    private javax.swing.JLabel resumoOpcoesLabel;
     private javax.swing.JTextField tamanhoMsg;
+    private javax.swing.JLabel taxaTransLabel;
     private javax.swing.JTextField totalBytes;
     // End of variables declaration//GEN-END:variables
+    ServerSocket tmpSocket;
+    Socket socket;
 }
