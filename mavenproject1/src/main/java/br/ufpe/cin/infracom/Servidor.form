@@ -43,20 +43,31 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jLabel1" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="resumoOpcoes" min="-2" max="-2" attributes="0"/>
                               <Component id="taxaTrans" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="perdaPacotes" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="resumoOpcoesLabel" pref="346" max="32767" attributes="0"/>
+                              <Component id="perdaPacotesLabel" alignment="0" max="32767" attributes="0"/>
+                              <Component id="taxaTransLabel" alignment="0" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="216" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jitter" min="-2" max="-2" attributes="0"/>
-                              <Component id="bytesRecebidos" min="-2" max="-2" attributes="0"/>
-                              <Component id="bytesEnviados" min="-2" max="-2" attributes="0"/>
+                              <Component id="bytesEnviadosLabel" alignment="0" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="jitter" min="-2" max="-2" attributes="0"/>
+                                      <Component id="bytesRecebidos" min="-2" max="-2" attributes="0"/>
+                                      <Component id="bytesEnviados" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace min="0" pref="220" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="bytesRecebidosLabel" alignment="0" max="32767" attributes="0"/>
+                              <Component id="jitterLabel" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
-                  <EmptySpace pref="232" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -70,17 +81,35 @@
                       <Component id="resumoOpcoes" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="bytesEnviados" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="bytesEnviadosLabel" min="-2" pref="47" max="-2" attributes="0"/>
+                      <Component id="resumoOpcoesLabel" alignment="1" min="-2" pref="47" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="bytesRecebidos" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="taxaTrans" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="65" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="taxaTransLabel" alignment="3" min="-2" pref="47" max="-2" attributes="0"/>
+                      <Component id="bytesRecebidosLabel" alignment="3" min="-2" pref="47" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="perdaPacotes" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jitter" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="175" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="perdaPacotesLabel" min="-2" pref="47" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="104" max="32767" attributes="0"/>
+                      </Group>
+                      <Component id="jitterLabel" max="32767" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -120,6 +149,18 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Jitter"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="bytesEnviadosLabel">
+        </Component>
+        <Component class="javax.swing.JLabel" name="taxaTransLabel">
+        </Component>
+        <Component class="javax.swing.JLabel" name="resumoOpcoesLabel">
+        </Component>
+        <Component class="javax.swing.JLabel" name="bytesRecebidosLabel">
+        </Component>
+        <Component class="javax.swing.JLabel" name="perdaPacotesLabel">
+        </Component>
+        <Component class="javax.swing.JLabel" name="jitterLabel">
         </Component>
       </SubComponents>
     </Container>
