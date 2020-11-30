@@ -172,13 +172,14 @@ public class Servidor extends javax.swing.JFrame {
             //Calcular o Jitter
             tempAtual = System.currentTimeMillis();
             if (nSeqPacoteAnterior == pacote[4] - 1 ) {
+                System.out.println("Pacote: " + pacote[4]);
             	double jitter = tempAtual - tempAnterior;
             	contadorDeJitter++;
             	if (jitter > jitterMaximo) {
-            		jitterMaximo = jitter;
+                    jitterMaximo = jitter;
             	}
             	if (jitter < jitterMinimo) {
-            		jitterMinimo = jitter;
+                    jitterMinimo = jitter;
             	}
             	somaJitter = somaJitter + jitter;
             	tempAnterior = tempAtual;

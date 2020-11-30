@@ -425,16 +425,36 @@ public class Cliente extends javax.swing.JFrame {
         byte versao;
 
         if (ultimo) {
-            versao = (byte) 0b00010000; //versão 1 e ultimo pacote
+            switch (opcao) {
+                case 1:
+                    versao = (byte) 0b00010000; //versão 1 e ultimo pacote
+                    break;
+                case 2:
+                    versao = (byte) 0b00010001;
+                    break;
+                default:
+                    versao = (byte) 0b00010010;
+                    break;
+            }
+            
         } else {
-            versao = (byte) 0b00000000; //versão 1
+            switch (opcao) {
+                case 1:
+                    versao = (byte) 0b00000000; //versão 1 e ultimo pacote
+                    break;
+                case 2:
+                    versao = (byte) 0b00000001;
+                    break;
+                default:
+                    versao = (byte) 0b00000010;
+                    break;
+            }
         }
         System.out.println(qteBytes);
         dados[0] = versao;
-        dados[1] = (byte) opcao;
-        dados[2] = (byte) qteBytes;
-        dados[3] = (byte) opcaoValor;
-        dados[4] = (byte) numSequencia;
+        dados[1] = (byte) qteBytes;
+        dados[2] = (byte) opcaoValor;
+        dados[3] = (byte) numSequencia;
         return dados;
     }
 
