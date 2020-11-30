@@ -369,9 +369,9 @@ public class Cliente extends javax.swing.JFrame {
         int qtePacotes = Integer.parseInt(this.numPacotes.getText()), qte = qtePacotes * Integer.parseInt(this.tamanhoMsg.getText());
         for (int i = 0; i < qtePacotes; i++) {
             if (i == qtePacotes - 1) {
-                enviarDados = this.inserirCabecalho(enviarDados, true, 1, qte, qtePacotes);
+                enviarDados = this.inserirCabecalho(enviarDados, true, 1, qte, qtePacotes, i);
             } else {
-                enviarDados = this.inserirCabecalho(enviarDados, false, 1, qte, qtePacotes);
+                enviarDados = this.inserirCabecalho(enviarDados, false, 1, qte, qtePacotes, i);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
             clientSocket.send(enviarPacote);
@@ -391,9 +391,9 @@ public class Cliente extends javax.swing.JFrame {
         for (int i = 0; temTempo; i++) {
             if ((System.currentTimeMillis() - tempo) >= duracao) {
                 temTempo = false;
-                enviarDados = this.inserirCabecalho(enviarDados, true, 2, i, Integer.parseInt(this.duracaoTeste.getText()));
+                enviarDados = this.inserirCabecalho(enviarDados, true, 2, i, Integer.parseInt(this.duracaoTeste.getText()), i);
             } else {
-                enviarDados = this.inserirCabecalho(enviarDados, false, 2, i, Integer.parseInt(this.duracaoTeste.getText()));
+                enviarDados = this.inserirCabecalho(enviarDados, false, 2, i, Integer.parseInt(this.duracaoTeste.getText()), i);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
             clientSocket.send(enviarPacote);
@@ -411,9 +411,9 @@ public class Cliente extends javax.swing.JFrame {
 
         for (int i = 0; i < x; i++) {
             if (i == x - 1) {
-                enviarDados = this.inserirCabecalho(enviarDados, true, 3, Integer.parseInt(this.totalBytes.getText()), 0);
+                enviarDados = this.inserirCabecalho(enviarDados, true, 3, Integer.parseInt(this.totalBytes.getText()), 0, i);
             } else {
-                enviarDados = this.inserirCabecalho(enviarDados, false, 3, Integer.parseInt(this.totalBytes.getText()), 0);
+                enviarDados = this.inserirCabecalho(enviarDados, false, 3, Integer.parseInt(this.totalBytes.getText()), 0, i);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
             clientSocket.send(enviarPacote);
@@ -421,7 +421,7 @@ public class Cliente extends javax.swing.JFrame {
         clientSocket.close();
     }
 
-    private byte[] inserirCabecalho(byte[] dados, boolean ultimo, int opcao, int qteBytes, int opcaoValor) {
+    private byte[] inserirCabecalho(byte[] dados, boolean ultimo, int opcao, int qteBytes, int opcaoValor, int numSequencia) {
         byte versao;
 
         if (ultimo) {
@@ -429,11 +429,12 @@ public class Cliente extends javax.swing.JFrame {
         } else {
             versao = (byte) 0b00000000; //versão 1
         }
-
+        System.out.println(qteBytes);
         dados[0] = versao;
         dados[1] = (byte) opcao;
         dados[2] = (byte) qteBytes;
         dados[3] = (byte) opcaoValor;
+        dados[4] = (byte) numSequencia;
         return dados;
     }
 
