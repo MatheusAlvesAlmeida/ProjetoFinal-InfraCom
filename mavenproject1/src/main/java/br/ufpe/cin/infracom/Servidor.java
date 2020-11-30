@@ -142,6 +142,7 @@ public class Servidor extends javax.swing.JFrame {
         double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
         int contadorDeJitter = 0;
         double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
+        int nSeqPacoteAnterior = 0;
         boolean temDados = false;
         InetAddress enderecoCliente = null;
         
@@ -170,18 +171,21 @@ public class Servidor extends javax.swing.JFrame {
             pacotesRecebidos++;
             //Calcular o Jitter
             tempAtual = System.currentTimeMillis();
-            double jitter = tempAtual - tempAnterior;
-            contadorDeJitter++;
-            if (jitter > jitterMaximo) {
-                jitterMaximo = jitter;
+            if (nSeqPacoteAnterior == pacote[4] - 1 ) {
+            	double jitter = tempAtual - tempAnterior;
+            	contadorDeJitter++;
+            	if (jitter > jitterMaximo) {
+            		jitterMaximo = jitter;
+            	}
+            	if (jitter < jitterMinimo) {
+            		jitterMinimo = jitter;
+            	}
+            	somaJitter = somaJitter + jitter;
+            	tempAnterior = tempAtual;
             }
-            if (jitter < jitterMinimo) {
-                jitterMinimo = jitter;
-            }
-            somaJitter = somaJitter + jitter;
-            tempAnterior = tempAtual;
             //Fim do cálculo dos jitters min e max. 
-
+            
+            nSeqPacoteAnterior = pacote[4];
             String msgDecode = new String(receberPacote.getData(), "UTF-8");
             System.out.println("Pacote recebido: " + Arrays.toString(pacote));
         }
