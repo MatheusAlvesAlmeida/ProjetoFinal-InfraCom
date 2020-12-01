@@ -155,6 +155,7 @@ public class Servidor extends javax.swing.JFrame {
         while (bitFlag != 1) {
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
             servidor.serverSocketUDP.receive(receberPacote);
+            ipCliente = receberPacote.getAddress().getHostAddress();
             byte[] pacote = receberPacote.getData();
             qteBytesRecebidos += pacote.length;
             if (!temDados) {
@@ -209,7 +210,7 @@ public class Servidor extends javax.swing.JFrame {
         //servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
         String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo;
         try {
-            servidor.socket = new Socket("localhost", 3001);
+            servidor.socket = new Socket(ipCliente, 3001); 
             DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
             saida.write(enviar.getBytes());
         } catch (ConnectException e) {
@@ -239,5 +240,5 @@ public class Servidor extends javax.swing.JFrame {
     Socket socket;
     byte[] receberDados;
     int porta = 3002, portaCliente;
-    String ipCliente;
+    static String ipCliente;
 }
