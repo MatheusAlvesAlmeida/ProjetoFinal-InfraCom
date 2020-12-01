@@ -196,7 +196,6 @@ public class Servidor extends javax.swing.JFrame {
             conti++;
             timeout = System.currentTimeMillis() + 5000;
         }
-        
         System.out.println(qteBytesRecebidos);
 
         if (Integer.toString(opcao).endsWith("01")) { //opção: nº de pacotes
@@ -205,6 +204,15 @@ public class Servidor extends javax.swing.JFrame {
             pacotesEnviados = (int) Math.ceil(qntddBytes / tamMsg);
         } else { //opção: tempo
             pacotesEnviados = nSeqPacoteAnterior;
+        }
+        //Cálculo quantidade de pacotes
+        
+        if (Integer.toString(opcao).endsWith("00")) { //opção: nº de pacotes
+        	pacotesEnviados = opcaoValor;
+        } else if (Integer.toString(opcao).endsWith("01")) { //opção: totalbytes
+        	pacotesEnviados = (int)Math.ceil(opcaoValor/1000);
+        } else { //opção: tempo
+        	pacotesEnviados = nSeqPacoteAnterior;
         }
 
         if (contadorDeJitter == 1) { //SÃ“ RECEBEU 1 PACOTE
