@@ -472,7 +472,7 @@ public class Cliente extends javax.swing.JFrame {
             }
         });
         try {
-            cliente.tmpSocket = new ServerSocket(3001);
+            cliente.tmpSocket = new ServerSocket(3005);
             System.out.println("Aguardando conexÃ£o do cliente...");
             cliente.socket = cliente.tmpSocket.accept();
 
