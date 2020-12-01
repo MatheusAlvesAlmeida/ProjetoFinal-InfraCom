@@ -188,6 +188,17 @@ public class Servidor extends javax.swing.JFrame {
             System.out.println("Pacote recebido: " + Arrays.toString(pacote));
             timeout = System.currentTimeMillis() + 5000;
         }
+        
+        //Cálculo quantidade de pacotes
+        
+        if (Integer.toString(opcao).endsWith("00")) { //opção: nº de pacotes
+        	pacotesEnviados = opcaoValor;
+        } else if (Integer.toString(opcao).endsWith("01")) { //opção: totalbytes
+        	pacotesEnviados = (int)Math.ceil(opcaoValor/1000);
+        } else { //opção: tempo
+        	pacotesEnviados = nSeqPacoteAnterior;
+        }
+        
 
         if (contadorDeJitter == 1) { //SÃ“ RECEBEU 1 PACOTE
             jitterMinimo = 0;
