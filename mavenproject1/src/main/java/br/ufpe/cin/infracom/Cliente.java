@@ -102,13 +102,13 @@ public class Cliente extends javax.swing.JFrame {
 
         jLabel5.setText("IP de destino*:");
 
-        jLabel6.setText("Escolha uma dessas opções*:");
+        jLabel6.setText("Escolha uma dessas opÃ§Ãµes*:");
 
-        jLabel7.setText("Nº pacotes a serem enviados:");
+        jLabel7.setText("NÂº pacotes a serem enviados:");
 
         jLabel8.setText("Total de bytes a serem enviados:");
 
-        jLabel9.setText("Duração do teste em segundos:");
+        jLabel9.setText("DuraÃ§Ã£o do teste em segundos:");
 
         botaoIniciarTeste.setText("Iniciar teste");
         botaoIniciarTeste.addActionListener(new java.awt.event.ActionListener() {
@@ -137,19 +137,19 @@ public class Cliente extends javax.swing.JFrame {
 
         jLabel10.setText("Resultados do teste:");
 
-        jLabel11.setText("Resumo das opções:");
+        jLabel11.setText("Resumo das opÃ§Ãµes:");
 
         jLabel12.setText("Bytes Enviados:");
 
         jLabel13.setText("Bytes recebidos:");
 
-        jLabel14.setText("Taxa de transferência:");
+        jLabel14.setText("Taxa de transferÃªncia:");
 
         jLabel15.setText("% da perda de pacotes:");
 
         jLabel16.setText("Jitter:");
 
-        resumoOpcoesLabel.setText("O cliente escolheu a opção");
+        resumoOpcoesLabel.setText("O cliente escolheu a opÃ§Ã£o");
 
         bytesEnviadosLabel.setText("Foram enviados");
 
@@ -159,7 +159,7 @@ public class Cliente extends javax.swing.JFrame {
 
         perdaPacotesLabel.setText("Igual a");
 
-        jitterLabel.setText("métricas do jitter");
+        jitterLabel.setText("mÃ©tricas do jitter");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -319,10 +319,10 @@ public class Cliente extends javax.swing.JFrame {
     private void botaoIniciarTesteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botaoIniciarTesteActionPerformed
         if (this.portaOrigem.getText().isEmpty() || this.tamanhoMsg.getText().isEmpty()
                 || this.ipDestino.getText().isEmpty() || this.tamanhoMsg.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Você não digitou todas as informações necessárias");
+            JOptionPane.showMessageDialog(null, "VocÃª nÃ£o digitou todas as informaÃ§Ãµes necessÃ¡rias");
         } else {
             if (this.numPacotes.getText().isEmpty() && this.duracaoTeste.getText().isEmpty() && this.totalBytes.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Você não escolheu uma das 3 opções");
+                JOptionPane.showMessageDialog(null, "VocÃª nÃ£o escolheu uma das 3 opÃ§Ãµes");
             } else {
                 try {
                     this.iniciarEnvio();
@@ -427,7 +427,7 @@ public class Cliente extends javax.swing.JFrame {
         if (ultimo) {
             switch (opcao) {
                 case 1:
-                    versao = (byte) 0b00010000; //versão 1 e ultimo pacote
+                    versao = (byte) 0b00010000; //versÃ£o 1 e ultimo pacote
                     break;
                 case 2:
                     versao = (byte) 0b00010001;
@@ -440,7 +440,7 @@ public class Cliente extends javax.swing.JFrame {
         } else {
             switch (opcao) {
                 case 1:
-                    versao = (byte) 0b00000000; //versão 1 e ultimo pacote
+                    versao = (byte) 0b00000000; //versÃ£o 1 e ultimo pacote
                     break;
                 case 2:
                     versao = (byte) 0b00000001;
@@ -450,16 +450,21 @@ public class Cliente extends javax.swing.JFrame {
                     break;
             }
         }
-        System.out.println(qteBytes);
         dados[0] = versao;
-        dados[1] = (byte) qteBytes;
-        dados[2] = (byte) opcaoValor;
-        dados[3] = (byte) numSequencia;
+        dados[1] = (byte) Math.floor(qteBytes/255);
+        qteBytes = qteBytes%255;
+        dados[2] = (byte) qteBytes;
+        dados[3] = (byte) Math.floor(opcaoValor/255);
+        opcaoValor = opcaoValor%255;
+        dados[4] = (byte) opcaoValor;
+        dados[5] = (byte) Math.floor(numSequencia);
+        numSequencia = numSequencia%255;
+        dados[6] = (byte) numSequencia;
         return dados;
     }
 
     public static void main(String args[]) throws IOException, InterruptedException {
-        //Usar cabeçalho no envio de msgs
+        //Usar cabeÃ§alho no envio de msgs
         Cliente cliente = new Cliente();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -468,7 +473,7 @@ public class Cliente extends javax.swing.JFrame {
         });
         try {
             cliente.tmpSocket = new ServerSocket(3001);
-            System.out.println("Aguardando conexão do cliente...");
+            System.out.println("Aguardando conexÃ£o do cliente...");
             cliente.socket = cliente.tmpSocket.accept();
 
             InputStreamReader entrada = new InputStreamReader(cliente.socket.getInputStream());
@@ -476,7 +481,7 @@ public class Cliente extends javax.swing.JFrame {
             String resposta = le.readLine();
             System.out.println(resposta);
         } catch (BindException e) {
-            System.out.println("Endereço ocupado");
+            System.out.println("EndereÃ§o ocupado");
         } catch (Exception e) {
             System.out.println("Erro " + e);
         }
