@@ -20,7 +20,28 @@ public class Servidor extends javax.swing.JFrame {
         this.receberDados = new byte[2000];
         initComponents();
     }
-
+    
+    	String a = "a.st1.ntp.br";
+	    private long getWebTime(String address) {
+	        try {
+	            NTPUDPClient client = new NTPUDPClient();
+	            client.open();
+	            client.setDefaultTimeout(500);
+	            client.setSoTimeout(500);
+	            InetAddress inetAddress = InetAddress.getByName(this.a);
+	            //Log.debug("start ask time....");
+	            TimeInfo timeInfo = client.getTime(inetAddress);
+	            //Log.debug("done!");
+	            System.out.println("deu bom");
+	            System.out.println(timeInfo.getMessage().getTransmitTimeStamp().getTime());
+	            return timeInfo.getMessage().getTransmitTimeStamp().getTime();
+	        } catch (Exception e) {
+	        	System.out.println("deu ruim " + e);
+	            return 0L;
+	        }
+	    }
+	    
+	    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -143,6 +164,7 @@ public class Servidor extends javax.swing.JFrame {
         int nSeqPacoteAnterior = 0;
         boolean temDados = false;
         String ipCliente = "";
+        String endereco = "a.st1.ntp.br";
         
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -231,7 +253,8 @@ public class Servidor extends javax.swing.JFrame {
             System.out.println("Pacote recebido " + conti + ": "+ Arrays.toString(pacote));
             conti++;
             timeout = System.currentTimeMillis() + 5000;
-        }
+        }            
+        long tempExecucao = servidor.getWebTime(endereco);
         System.out.println(qteBytesRecebidos);
         
         if (opcao == 1 || opcao == 17) { //opção: nº de pacotes
@@ -254,7 +277,8 @@ public class Servidor extends javax.swing.JFrame {
         } else {
             jitterMedio = somaJitter / contadorDeJitter;
         }
-
+        
+        
         String jitterInfo = "Jitter mÃ­nimo: " + jitterMinimo + "\n Jitter mÃ¡ximo: " + jitterMaximo + "\n Jitter mÃ©dio: " + jitterMedio + "";
         String opcoesInfo = "O cliente escolheu a opÃ§Ã£o " + opcaoValor + "";
         int perdaPacotesPor = 100 - (int)Math.floor((pacotesRecebidos * 100) / pacotesEnviados);
