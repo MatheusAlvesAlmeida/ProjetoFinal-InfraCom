@@ -159,14 +159,11 @@ public class Servidor extends javax.swing.JFrame {
     public static void main(String args[]) throws SocketException, IOException {
         final Servidor servidor = new Servidor();
         int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, pacotesEnviados = 0, pacotesRecebidos = 0, tamMsg = 0;
-        double timeout = System.currentTimeMillis() + 5000;
         double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
-        int contadorDeJitter = 0;
+        int contadorDeJitter = 0, nSeqPacoteAnterior = 0;
         double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
-        int nSeqPacoteAnterior = 0;
         boolean temDados = false;
-        String ipCliente = "";
-        String endereco = "a.st1.ntp.br";
+        String ipCliente = "", endereco = "a.st1.ntp.br", tempoSaidaCliente = "";
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -176,7 +173,7 @@ public class Servidor extends javax.swing.JFrame {
 
         int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
 
-        servidor.serverSocketUDP.setSoTimeout(60000); //set timeout 1 mnt para poder digitar
+        servidor.serverSocketUDP.setSoTimeout(60000); //set timeout 1 minuto para poder digitar
         while (bitFlag != 1) {
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
             try {
@@ -194,6 +191,10 @@ public class Servidor extends javax.swing.JFrame {
                         i = pacote.length;
                     }
                 }
+                for (int i = 7; i < 15; i++) {
+                	tempoSaidaCliente += pacote[i];
+				}
+                temDados = true;
             }
 
             opcao = pacote[0];
@@ -230,7 +231,7 @@ public class Servidor extends javax.swing.JFrame {
 
             ipCliente = receberPacote.getAddress().getHostAddress();
             portaCliente = receberPacote.getPort();
-            temDados = true;
+            
             System.out.println(qntddBytes + " " + opcaoValor + " " + nSeqPacoteAnterior);
             qteBytesRecebidos += tamMsg;
 
@@ -260,6 +261,7 @@ public class Servidor extends javax.swing.JFrame {
             conti++;
             servidor.serverSocketUDP.setSoTimeout(5000); //set timeout pra 5s
         }
+        System.out.println("Tempo de saída do cliente: " + tempoSaidaCliente);
         long tempExecucao = servidor.getWebTime(endereco);
         System.out.println(qteBytesRecebidos);
 

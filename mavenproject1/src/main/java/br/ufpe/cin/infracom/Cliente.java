@@ -27,6 +27,7 @@ import org.apache.commons.net.ntp.TimeInfo;
 public class Cliente extends javax.swing.JFrame {
 
     public Cliente() {
+    	this.tempPrimeiro = 0;
         initComponents();
     }
 
@@ -483,12 +484,13 @@ public class Cliente extends javax.swing.JFrame {
         numSequencia = numSequencia % 255;
         dados[6] = (byte) numSequencia;
 
-        if (dados[5] == 0 && dados[6] == 0 || dados[5] == 0 && dados[6] == 1) {
-            long tempPrimeiro = this.getWebTime(this.a);
-
-            //-----------------------------------------------------------------------------------------------------------------------
-            //=====================================================#TODO=============================================================
-            //-----------------------------------------------------------------------------------------------------------------------
+        if (dados[5] == 0 && dados[6] == 0 || dados[5] == 0 && dados[6] == 1 || dados[5] == 0 && dados[6] == 2) {
+            this.tempPrimeiro = this.getWebTime(this.a);
+            System.out.println("Tempo de saída do cliente: " + tempPrimeiro);
+            String str = tempPrimeiro + "";
+            for (int i = 5; i < str.length(); i++) {
+    			dados[i + 2] = (byte) str.charAt(i);
+    		}
         }
         int x = Integer.parseInt(this.tamanhoMsg.getText()) - 1;
         dados[x] = -1;
@@ -559,4 +561,5 @@ public class Cliente extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
     ServerSocket tmpSocket;
     Socket socket;
+    long tempPrimeiro;
 }
