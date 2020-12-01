@@ -6,9 +6,12 @@ import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
 
 public class Servidor extends javax.swing.JFrame {
 
@@ -131,7 +134,7 @@ public class Servidor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     public static void main(String args[]) throws SocketException, IOException {
-        Servidor servidor = new Servidor();
+        final Servidor servidor = new Servidor();
         int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, pacotesEnviados = 0, pacotesRecebidos = 0, tamMsg = 0;
         double timeout = System.currentTimeMillis() + 5000;
         double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
@@ -146,8 +149,8 @@ public class Servidor extends javax.swing.JFrame {
                 servidor.setVisible(true);
             }
         });
-        //apagar dps
-        int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
+        
+        int conti=0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
         
         
         while (bitFlag != 1 && timeout > System.currentTimeMillis()) {
@@ -162,33 +165,44 @@ public class Servidor extends javax.swing.JFrame {
                         i = pacote.length;
                     }
                 }
-                opcao = pacote[0];
-                if (pacote[1] < 0) {
-                    p1 = pacote[1] + 256;
-                }
-                if (pacote[2] < 0) {
-                    p2 = pacote[2] + 256;
-                }
-                if (pacote[3] < 0) {
-                    p3 = pacote[3] + 256;
-                }
-                if (pacote[4] < 0) {
-                    p4 = pacote[4] + 256;
-                }
-                if (pacote[5] < 0) {
-                    p5 = pacote[5] + 256;
-                }
-                if (pacote[6] < 0) {
-                    p6 = pacote[6] + 256;
-                }
-                qntddBytes = (p1 * 255) + p2;
-                opcaoValor = (p3 * 255) + p4;
-                nSeqPacoteAnterior = (p5 * 255) + p6;
-       
-                ipCliente = receberPacote.getAddress().getHostAddress();
-                portaCliente = receberPacote.getPort();
-                temDados = true;
+                
             }
+            
+            opcao = pacote[0];
+            
+            p1 = (int) pacote[1];
+            p2 = (int) pacote[2];
+            p3 = (int) pacote[3];
+            p4 = (int) pacote[4];
+            p5 = (int) pacote[5];
+            p6 = (int) pacote[6];
+            
+            if (p1 < 0) {
+            	p1 = p1 + 256;
+            }
+            if (p2 < 0) {
+            	p2 = p2 + 256;
+            }
+            if (p3 < 0) {
+            	p3 = p3 + 256;
+            }
+            if (p4 < 0) {
+            	p4 = p4 + 256;
+            }
+            if (p5 < 0) {
+            	p5 = p5 + 256;
+            }
+            if (p6 < 0) {
+            	p6 = p6 + 256;
+            }
+            
+            qntddBytes = p1 + p2;
+            opcaoValor = p3 + p4;
+            nSeqPacoteAnterior = p5 + p6;
+   
+            ipCliente = receberPacote.getAddress().getHostAddress();
+            portaCliente = receberPacote.getPort();
+            temDados = true;
             System.out.println(qntddBytes + " " + opcaoValor + " " + nSeqPacoteAnterior);
             qteBytesRecebidos += tamMsg;
             
@@ -219,22 +233,18 @@ public class Servidor extends javax.swing.JFrame {
             timeout = System.currentTimeMillis() + 5000;
         }
         System.out.println(qteBytesRecebidos);
-
-        if (Integer.toString(opcao).endsWith("01")) { //opção: nº de pacotes
-            pacotesEnviados = opcaoValor;
-        } else if (Integer.toString(opcao).endsWith("10")) { //opção: totalbytes
-            pacotesEnviados = (int) Math.ceil(qntddBytes / tamMsg);
-        } else { //opção: tempo
-            pacotesEnviados = nSeqPacoteAnterior;
-        }
-        //Cálculo quantidade de pacotes
         
-        if (Integer.toString(opcao).endsWith("00")) { //opção: nº de pacotes
-        	pacotesEnviados = opcaoValor;
-        } else if (Integer.toString(opcao).endsWith("01")) { //opção: totalbytes
-        	pacotesEnviados = (int)Math.ceil(opcaoValor/1000);
-        } else { //opção: tempo
-        	pacotesEnviados = nSeqPacoteAnterior;
+        if (opcao == 1 || opcao == 17) { //opção: nº de pacotes
+            pacotesEnviados = opcaoValor;
+            System.out.println("OPCAO 1");
+        } else if (opcao == 2 || opcao == 18) { //opção: totalbytes
+            pacotesEnviados = (int) Math.ceil(qntddBytes / tamMsg);
+            System.out.println("OPCAO 2");
+        } else if (opcao == 3 || opcao == 19) { //opção: tempo
+            pacotesEnviados = nSeqPacoteAnterior;
+            System.out.println("OPCAO 3");
+        } else {
+        	System.out.println("Erro no cálculo de pacotes enviados");
         }
 
         if (contadorDeJitter == 1) { //SÃ“ RECEBEU 1 PACOTE
@@ -247,7 +257,10 @@ public class Servidor extends javax.swing.JFrame {
 
         String jitterInfo = "Jitter mÃ­nimo: " + jitterMinimo + "\n Jitter mÃ¡ximo: " + jitterMaximo + "\n Jitter mÃ©dio: " + jitterMedio + "";
         String opcoesInfo = "O cliente escolheu a opÃ§Ã£o " + opcaoValor + "";
-        double perdaPacotesPor = (pacotesRecebidos * 100) / pacotesEnviados;
+        int perdaPacotesPor = 100 - (int)Math.floor((pacotesRecebidos * 100) / pacotesEnviados);
+        System.out.println(pacotesRecebidos);
+        System.out.println(pacotesEnviados);
+        System.out.println(perdaPacotesPor);
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
         servidor.jitterLabel.setText(jitterInfo);
         servidor.resumoOpcoesLabel.setText(opcoesInfo);
