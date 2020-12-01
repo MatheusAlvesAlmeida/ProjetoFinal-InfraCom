@@ -13,6 +13,9 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
 public class Servidor extends javax.swing.JFrame {
 
     public Servidor() throws SocketException, IOException {
