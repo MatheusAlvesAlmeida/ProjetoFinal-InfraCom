@@ -140,19 +140,22 @@ public class Servidor extends javax.swing.JFrame {
         int nSeqPacoteAnterior = 0;
         boolean temDados = false;
         String ipCliente = "";
-
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 servidor.setVisible(true);
             }
         });
-        int conti = 0;
+        //apagar dps
+        int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
+        
+        
         while (bitFlag != 1 && timeout > System.currentTimeMillis()) {
             DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
             servidor.serverSocketUDP.receive(receberPacote); 
             byte[] pacote = receberPacote.getData();
             
-            if (!temDados) {
+            if (!temDados) { 
                 for (int i = 0; i < pacote.length; i++) {
                     if(pacote[i] == -1){
                         tamMsg = i + 1;
@@ -160,14 +163,33 @@ public class Servidor extends javax.swing.JFrame {
                     }
                 }
                 opcao = pacote[0];
-                qntddBytes = (pacote[1] * 255) + pacote[2];
-                opcaoValor = (pacote[3] * 255) + pacote[4];
-                nSeqPacoteAnterior = (pacote[5] * 255) + pacote[6];
+                if (pacote[1] < 0) {
+                    p1 = pacote[1] + 256;
+                }
+                if (pacote[2] < 0) {
+                    p2 = pacote[2] + 256;
+                }
+                if (pacote[3] < 0) {
+                    p3 = pacote[3] + 256;
+                }
+                if (pacote[4] < 0) {
+                    p4 = pacote[4] + 256;
+                }
+                if (pacote[5] < 0) {
+                    p5 = pacote[5] + 256;
+                }
+                if (pacote[6] < 0) {
+                    p6 = pacote[6] + 256;
+                }
+                qntddBytes = (p1 * 255) + p2;
+                opcaoValor = (p3 * 255) + p4;
+                nSeqPacoteAnterior = (p5 * 255) + p6;
+       
                 ipCliente = receberPacote.getAddress().getHostAddress();
                 portaCliente = receberPacote.getPort();
                 temDados = true;
             }
-            
+            System.out.println(qntddBytes + " " + opcaoValor + " " + nSeqPacoteAnterior);
             qteBytesRecebidos += tamMsg;
             
             byte cabecalho = pacote[0];

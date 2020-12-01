@@ -457,7 +457,7 @@ public class Cliente extends javax.swing.JFrame {
         dados[3] = (byte) Math.floor(opcaoValor/255);
         opcaoValor = opcaoValor%255;
         dados[4] = (byte) opcaoValor;
-        dados[5] = (byte) Math.floor(numSequencia);
+        dados[5] = (byte) Math.floor(numSequencia/255);
         numSequencia = numSequencia%255;
         dados[6] = (byte) numSequencia;
         int x = Integer.parseInt(this.tamanhoMsg.getText()) - 1;
