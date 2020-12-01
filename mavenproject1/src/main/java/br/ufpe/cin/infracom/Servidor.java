@@ -1,22 +1,5 @@
-package br.ufpe.cin.infracom;
-
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.Arrays;
-
-/**
- *
- * @author matheus
- */
 public class Servidor extends javax.swing.JFrame {
-   
+	   
     public Servidor() throws SocketException, IOException {
         this.serverSocketUDP = new DatagramSocket(this.porta);
         this.receberDados = new byte[1000];
@@ -44,15 +27,15 @@ public class Servidor extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Informações da avaliação");
+        jLabel1.setText("InformaÃ§Ãµes da avaliaÃ§Ã£o");
 
-        resumoOpcoes.setText("Resumo das opções");
+        resumoOpcoes.setText("Resumo das opÃ§Ãµes");
 
         bytesEnviados.setText("Bytes enviados");
 
         bytesRecebidos.setText("Bytes recebidos");
 
-        taxaTrans.setText("Taxa de transferência");
+        taxaTrans.setText("Taxa de transferÃªncia");
 
         perdaPacotes.setText("% de perda de pacotes");
 
@@ -138,11 +121,11 @@ public class Servidor extends javax.swing.JFrame {
     public static void main(String args[]) throws SocketException, IOException {
         Servidor servidor = new Servidor();
         int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, pacotesEnviados = 0, pacotesRecebidos = 0;
-        double timeout = 5000;
+        double timeout = System.currentTimeMillis() + 5000;
         double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
         int contadorDeJitter = 0;
         double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
-        int nSeqPacoteAnterior = 0;
+        int nSeqPacoteAnterior;
         boolean temDados = false;
         InetAddress enderecoCliente = null;
         
@@ -152,16 +135,16 @@ public class Servidor extends javax.swing.JFrame {
             }
         });
         
-        while (bitFlag != 1) {
-            DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
-            servidor.serverSocketUDP.receive(receberPacote);
-            ipCliente = receberPacote.getAddress().getHostAddress();
+        while (bitFlag != 1 && timeout > System.currentTimeMillis()) {
+        	DatagramPacket receberPacote = new DatagramPacket(servidor.receberDados, servidor.receberDados.length);
+        	servidor.serverSocketUDP.receive(receberPacote);
             byte[] pacote = receberPacote.getData();
             qteBytesRecebidos += pacote.length;
             if (!temDados) {
-                opcao = pacote[1];
-                qntddBytes = pacote[2];
-                opcaoValor = pacote[3];
+                opcao = pacote[0];
+                qntddBytes = (pacote[1]*255) + pacote[2];
+                opcaoValor = (pacote[3]*255) + pacote[4];        
+                nSeqPacoteAnterior = (pacote[5]*255) + pacote[6];
                 enderecoCliente = receberPacote.getAddress();
                 portaCliente = receberPacote.getPort();
                 pacotesEnviados = qntddBytes / pacote.length;
@@ -185,14 +168,15 @@ public class Servidor extends javax.swing.JFrame {
             	somaJitter = somaJitter + jitter;
             	tempAnterior = tempAtual;
             }
-            //Fim do cálculo dos jitters min e max. 
+            //Fim do cÃ¡lculo dos jitters min e max. 
             
-            nSeqPacoteAnterior = pacote[4];
+            nSeqPacoteAnterior = (pacote[5]*255) + pacote[6];
             String msgDecode = new String(receberPacote.getData(), "UTF-8");
             System.out.println("Pacote recebido: " + Arrays.toString(pacote));
+            timeout = System.currentTimeMillis() + 5000;
         }
 
-        if (contadorDeJitter == 1) { //SÓ RECEBEU 1 PACOTE
+        if (contadorDeJitter == 1) { //SÃ“ RECEBEU 1 PACOTE
             jitterMinimo = 0;
             jitterMaximo = 0;
             jitterMedio = 0;
@@ -200,8 +184,8 @@ public class Servidor extends javax.swing.JFrame {
             jitterMedio = somaJitter / contadorDeJitter;
         }
         
-        String jitterInfo = "Jitter mínimo: " + jitterMinimo + "\n Jitter máximo: " + jitterMaximo + "\n Jitter médio: " + jitterMedio + "";
-        String opcoesInfo = "O cliente escolheu a opção " + opcaoValor + "";
+        String jitterInfo = "Jitter mÃ­nimo: " + jitterMinimo + "\n Jitter mÃ¡ximo: " + jitterMaximo + "\n Jitter mÃ©dio: " + jitterMedio + "";
+        String opcoesInfo = "O cliente escolheu a opÃ§Ã£o " + opcaoValor + "";
         //double perdaPacotesPor = (pacotesRecebidos * 100) / pacotesEnviados;
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
         servidor.jitterLabel.setText(jitterInfo);
@@ -210,11 +194,11 @@ public class Servidor extends javax.swing.JFrame {
         //servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
         String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo;
         try {
-            servidor.socket = new Socket(ipCliente, 3001); 
+            servidor.socket = new Socket("localhost", 3001);
             DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
             saida.write(enviar.getBytes());
         } catch (ConnectException e) {
-            System.out.println("Não foi possível chegar ao destinatário");
+            System.out.println("NÃ£o foi possÃ­vel chegar ao destinatÃ¡rio");
         } catch (Exception e) {
             System.out.println("Erro: " + e);
         }
@@ -240,5 +224,5 @@ public class Servidor extends javax.swing.JFrame {
     Socket socket;
     byte[] receberDados;
     int porta = 3002, portaCliente;
-    static String ipCliente;
+    String ipCliente;
 }
