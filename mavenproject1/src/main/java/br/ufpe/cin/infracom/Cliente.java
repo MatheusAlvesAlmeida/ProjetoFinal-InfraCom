@@ -26,6 +26,27 @@ public class Cliente extends javax.swing.JFrame {
     public Cliente() {
         initComponents();
     }
+    
+    private long getWebTime(String address) {
+        try {
+            NTPUDPClient client = new NTPUDPClient();
+            client.open();
+            client.setDefaultTimeout(500);
+            client.setSoTimeout(500);
+            InetAddress inetAddress = InetAddress.getByName(this.a);
+            //Log.debug("start ask time....");
+            TimeInfo timeInfo = client.getTime(inetAddress);
+            //Log.debug("done!");
+            System.out.println("deu bom");
+            System.out.println(timeInfo.getMessage().getTransmitTimeStamp().getTime());
+            return timeInfo.getMessage().getTransmitTimeStamp().getTime();
+        } catch (Exception e) {
+        	System.out.println("deu ruim " + e);
+            return 0L;
+        }
+    }
+    
+     
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -462,6 +483,15 @@ public class Cliente extends javax.swing.JFrame {
         dados[5] = (byte) Math.floor(numSequencia/255);
         numSequencia = numSequencia%255;
         dados[6] = (byte) numSequencia;
+        
+        if (dados[5] == 0 && dados[6] == 0 || dados[5] == 0 && dados[6] == 1) {
+        	long tempPrimeiro = this.getWebTime(this.a);
+        	
+        	//-----------------------------------------------------------------------------------------------------------------------
+        	//=====================================================#TODO=============================================================
+        	//-----------------------------------------------------------------------------------------------------------------------
+        	
+        }
         int x = Integer.parseInt(this.tamanhoMsg.getText()) - 1;
         dados[x] = -1;
         return dados;
@@ -527,6 +557,7 @@ public class Cliente extends javax.swing.JFrame {
     private javax.swing.JTextField tamanhoMsg;
     private javax.swing.JLabel taxaTransLabel;
     private javax.swing.JTextField totalBytes;
+	String a = "a.st1.ntp.br";
     // End of variables declaration//GEN-END:variables
     ServerSocket tmpSocket;
     Socket socket;
