@@ -192,7 +192,9 @@ public class Servidor extends javax.swing.JFrame {
                     }
                 }
                 for (int i = 7; i < 15; i++) {
-                	tempoSaidaCliente += pacote[i];
+                	int p = 0;
+                	p = (int)pacote[i];
+                	tempoSaidaCliente += (char)p;
 				}
                 temDados = true;
             }
@@ -261,9 +263,14 @@ public class Servidor extends javax.swing.JFrame {
             conti++;
             servidor.serverSocketUDP.setSoTimeout(5000); //set timeout pra 5s
         }
-        System.out.println("Tempo de saída do cliente: " + tempoSaidaCliente);
-        long tempExecucao = servidor.getWebTime(endereco);
-        System.out.println(qteBytesRecebidos);
+        int tempoPrimeiroPacote = Integer.parseInt(tempoSaidaCliente);
+        long tempoUltimoPacote = servidor.getWebTime(endereco);
+        tempoUltimoPacote = tempoUltimoPacote%100000000;
+        int tempoUltimoPacoteint = (int)tempoUltimoPacote;
+        double tempoTotal = tempoUltimoPacoteint - tempoPrimeiroPacote;
+        tempoTotal = tempoTotal/1000;
+        double txTransferencia = qntddBytes/tempoTotal;
+        System.out.println("Tempo total: " + tempoTotal);
 
         if (opcao == 1 || opcao == 17) { //opção: nº de pacotes
             pacotesEnviados = opcaoValor;
@@ -291,13 +298,13 @@ public class Servidor extends javax.swing.JFrame {
         int perdaPacotesPor = 100 - (int) Math.floor((pacotesRecebidos * 100) / pacotesEnviados);
         System.out.println(pacotesRecebidos);
         System.out.println(pacotesEnviados);
-        System.out.println(perdaPacotesPor);
+        System.out.println(perdaPacotesPor + "%");
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
         servidor.jitterLabel.setText(jitterInfo);
         servidor.resumoOpcoesLabel.setText(opcoesInfo);
         servidor.bytesRecebidosLabel.setText(Integer.toString(qteBytesRecebidos));
         servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
-        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo;
+        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + txTransferencia + "%";
         try {
             servidor.socket = new Socket(ipCliente, 3005);
             DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
