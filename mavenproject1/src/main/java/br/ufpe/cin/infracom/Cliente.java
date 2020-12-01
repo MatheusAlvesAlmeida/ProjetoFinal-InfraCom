@@ -41,7 +41,6 @@ public class Cliente extends javax.swing.JFrame {
             //Log.debug("start ask time....");
             TimeInfo timeInfo = client.getTime(inetAddress);
             //Log.debug("done!");
-            System.out.println(timeInfo.getMessage().getTransmitTimeStamp().getTime());
             return timeInfo.getMessage().getTransmitTimeStamp().getTime();
         } catch (Exception e) {
             System.out.println("Erro " + e);
@@ -489,6 +488,7 @@ public class Cliente extends javax.swing.JFrame {
             System.out.println("Tempo de saída do cliente: " + tempPrimeiro);
             String str = tempPrimeiro + "";
             for (int i = 5; i < str.length(); i++) {
+            	System.out.println(str.charAt(i));
     			dados[i + 2] = (byte) str.charAt(i);
     		}
         }
@@ -509,7 +509,6 @@ public class Cliente extends javax.swing.JFrame {
             cliente.tmpSocket = new ServerSocket(3005);
             System.out.println("Aguardando conexão do cliente...");
             cliente.socket = cliente.tmpSocket.accept();
-
             InputStreamReader entrada = new InputStreamReader(cliente.socket.getInputStream());
             BufferedReader le = new BufferedReader(entrada);
             String resposta = le.readLine();
