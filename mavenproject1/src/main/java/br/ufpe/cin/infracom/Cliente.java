@@ -30,6 +30,30 @@ public class Cliente extends javax.swing.JFrame {
     	this.tempPrimeiro = 0;
         initComponents();
     }
+    
+    private void setPerdaLabel(String msg){
+        this.perdaPacotesLabel.setText(msg);
+    }
+    
+    private void setResumoLabel(String msg){
+        this.resumoOpcoesLabel.setText(msg);
+    }
+    
+    private void setBytesEnviadosLabel(String msg){
+        this.bytesEnviadosLabel.setText(msg);
+    }
+    
+    private void setBytesRecebidosLabel(String msg){
+        this.bytesRecebidosLabel.setText(msg);
+    }
+    
+    private void setJitterLabel(String msg){
+        this.jitterLabel.setText(msg);
+    }
+    
+    private void setTaxaTransLabel(String msg){
+        this.taxaTransLabel.setText(msg);
+    }
 
     private long getWebTime(String address) {
         try {
@@ -512,6 +536,15 @@ public class Cliente extends javax.swing.JFrame {
             InputStreamReader entrada = new InputStreamReader(cliente.socket.getInputStream());
             BufferedReader le = new BufferedReader(entrada);
             String resposta = le.readLine();
+            
+            String[] res = resposta.split("#");            
+            cliente.setResumoLabel(res[0]);//Opcões info
+            cliente.setBytesEnviadosLabel(res[1]);// Qtd bytes recebidos
+            cliente.setBytesRecebidosLabel(res[2]);// Qtd bytes enviados
+            cliente.setJitterLabel(res[3]);// Jitter info
+            cliente.setPerdaLabel(res[4]);// Perdas
+            cliente.setTaxaTransLabel(res[5]);// Taxa de transf
+            
             System.out.println(resposta);
         } catch (BindException e) {
             System.out.println("Endereço ocupado");
