@@ -1,11 +1,9 @@
 package br.ufpe.cin.infracom;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.BindException;
-import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -17,8 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
+import util.NTPUDPClient;
+import util.TimeInfo;
 
 /**
  *
@@ -27,31 +25,31 @@ import org.apache.commons.net.ntp.TimeInfo;
 public class Cliente extends javax.swing.JFrame {
 
     public Cliente() {
-    	this.tempPrimeiro = 0;
+        this.tempPrimeiro = 0;
         initComponents();
     }
-    
-    private void setPerdaLabel(String msg){
+
+    private void setPerdaLabel(String msg) {
         this.perdaPacotesLabel.setText(msg);
     }
-    
-    private void setResumoLabel(String msg){
+
+    private void setResumoLabel(String msg) {
         this.resumoOpcoesLabel.setText(msg);
     }
-    
-    private void setBytesEnviadosLabel(String msg){
+
+    private void setBytesEnviadosLabel(String msg) {
         this.bytesEnviadosLabel.setText(msg);
     }
-    
-    private void setBytesRecebidosLabel(String msg){
+
+    private void setBytesRecebidosLabel(String msg) {
         this.bytesRecebidosLabel.setText(msg);
     }
-    
-    private void setJitterLabel(String msg){
+
+    private void setJitterLabel(String msg) {
         this.jitterLabel.setText(msg);
     }
-    
-    private void setTaxaTransLabel(String msg){
+
+    private void setTaxaTransLabel(String msg) {
         this.taxaTransLabel.setText(msg);
     }
 
@@ -147,13 +145,13 @@ public class Cliente extends javax.swing.JFrame {
 
         jLabel5.setText("IP de destino*:");
 
-        jLabel6.setText("Escolha uma dessas opÃ§Ãµes*:");
+        jLabel6.setText("Escolha uma dessas opções*:");
 
-        jLabel7.setText("NÂº pacotes a serem enviados:");
+        jLabel7.setText("Nº pacotes a serem enviados:");
 
         jLabel8.setText("Total de bytes a serem enviados:");
 
-        jLabel9.setText("DuraÃ§Ã£o do teste em segundos:");
+        jLabel9.setText("Duração do teste em segundos:");
 
         botaoIniciarTeste.setText("Iniciar teste");
         botaoIniciarTeste.addActionListener(new java.awt.event.ActionListener() {
@@ -182,19 +180,19 @@ public class Cliente extends javax.swing.JFrame {
 
         jLabel10.setText("Resultados do teste:");
 
-        jLabel11.setText("Resumo das opÃ§Ãµes:");
+        jLabel11.setText("Resumo das opções:");
 
         jLabel12.setText("Bytes Enviados:");
 
         jLabel13.setText("Bytes recebidos:");
 
-        jLabel14.setText("Taxa de transferÃªncia:");
+        jLabel14.setText("Taxa de transferência:");
 
         jLabel15.setText("% da perda de pacotes:");
 
         jLabel16.setText("Jitter:");
 
-        resumoOpcoesLabel.setText("O cliente escolheu a opÃ§Ã£o");
+        resumoOpcoesLabel.setText("O cliente escolheu a opção");
 
         bytesEnviadosLabel.setText("Foram enviados");
 
@@ -204,7 +202,7 @@ public class Cliente extends javax.swing.JFrame {
 
         perdaPacotesLabel.setText("Igual a");
 
-        jitterLabel.setText("mÃ©tricas do jitter");
+        jitterLabel.setText("métricas do jitter");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -314,7 +312,6 @@ public class Cliente extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel15)
                             .addComponent(perdaPacotesLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(5, 5, 5)
@@ -373,6 +370,8 @@ public class Cliente extends javax.swing.JFrame {
                     this.iniciarEnvio();
                 } catch (IOException ex) {
                     Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -397,7 +396,7 @@ public class Cliente extends javax.swing.JFrame {
         this.totalBytes.setText("");
     }//GEN-LAST:event_duracaoTesteKeyPressed
 
-    private void iniciarEnvio() throws UnknownHostException, IOException {
+    private void iniciarEnvio() throws UnknownHostException, IOException, SocketException, InterruptedException {
         if (!this.numPacotes.getText().isEmpty()) {
             this.enviarNumPacotes();
         } else if (!this.duracaoTeste.getText().isEmpty()) {
@@ -407,7 +406,7 @@ public class Cliente extends javax.swing.JFrame {
         }
     }
 
-    private void enviarNumPacotes() throws SocketException, UnknownHostException, IOException {
+    private void enviarNumPacotes() throws SocketException, UnknownHostException, IOException, InterruptedException {
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
         byte[] enviarDados = new byte[Integer.parseInt(this.tamanhoMsg.getText())];
@@ -425,7 +424,7 @@ public class Cliente extends javax.swing.JFrame {
     }
 
     //Testar
-    private void enviarDuracaoTeste() throws SocketException, UnknownHostException, IOException {
+    private void enviarDuracaoTeste() throws SocketException, UnknownHostException, IOException, InterruptedException {
         boolean temTempo = true;
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
@@ -434,22 +433,25 @@ public class Cliente extends javax.swing.JFrame {
         int duracao = Integer.parseInt(this.duracaoTeste.getText()) * 1000;
 
         for (int i = 0; temTempo; i++) {
+            if(i == 60001){
+                i = 0;
+            }
             if ((System.currentTimeMillis() - tempo) >= duracao) {
                 temTempo = false;
                 enviarDados = this.inserirCabecalhoDados(enviarDados, true, 3, i, Integer.parseInt(this.duracaoTeste.getText()), i);
             } else {
                 enviarDados = this.inserirCabecalhoDados(enviarDados, false, 3, i, Integer.parseInt(this.duracaoTeste.getText()), i);
-                System.out.println(i);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
             clientSocket.send(enviarPacote);
+            System.out.println(i);
         }
 
         clientSocket.close();
     }
 
     //Testar
-    private void enviarTotalBytes() throws SocketException, UnknownHostException, IOException {
+    private void enviarTotalBytes() throws SocketException, UnknownHostException, IOException, InterruptedException {
         int x = (int) Math.ceil(Integer.parseInt(this.totalBytes.getText()) / Integer.parseInt(this.tamanhoMsg.getText()));
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress ipServidor = InetAddress.getByName(this.ipDestino.getText());
@@ -462,12 +464,13 @@ public class Cliente extends javax.swing.JFrame {
                 enviarDados = this.inserirCabecalhoDados(enviarDados, false, 2, Integer.parseInt(this.totalBytes.getText()), 0, i);
             }
             DatagramPacket enviarPacote = new DatagramPacket(enviarDados, enviarDados.length, ipServidor, Integer.parseInt(this.portaDestino.getText()));
-            clientSocket.send(enviarPacote);
+            clientSocket.send(enviarPacote); 
         }
         clientSocket.close();
     }
 
-    private byte[] inserirCabecalhoDados(byte[] dados, boolean ultimo, int opcao, int qteBytes, int opcaoValor, int numSequencia) {
+    private byte[] inserirCabecalhoDados(byte[] dados, boolean ultimo, int opcao, int qteBytes, int opcaoValor, int numSequencia) throws InterruptedException {
+        Thread.sleep(1);
         byte versao;
 
         if (ultimo) {
@@ -509,12 +512,10 @@ public class Cliente extends javax.swing.JFrame {
 
         if (dados[5] == 0 && dados[6] == 0 || dados[5] == 0 && dados[6] == 1 || dados[5] == 0 && dados[6] == 2) {
             this.tempPrimeiro = this.getWebTime(this.a);
-            System.out.println("Tempo de saída do cliente: " + tempPrimeiro);
             String str = tempPrimeiro + "";
             for (int i = 5; i < str.length(); i++) {
-            	System.out.println(str.charAt(i));
-    			dados[i + 2] = (byte) str.charAt(i);
-    		}
+                dados[i + 2] = (byte) str.charAt(i);
+            }
         }
         int x = Integer.parseInt(this.tamanhoMsg.getText()) - 1;
         dados[x] = -1;
@@ -522,7 +523,6 @@ public class Cliente extends javax.swing.JFrame {
     }
 
     public static void main(String args[]) throws IOException, InterruptedException {
-        //Usar cabeÃ§alho no envio de msgs
         final Cliente cliente = new Cliente();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -531,20 +531,19 @@ public class Cliente extends javax.swing.JFrame {
         });
         try {
             cliente.tmpSocket = new ServerSocket(3005);
-            System.out.println("Aguardando conexão do cliente...");
             cliente.socket = cliente.tmpSocket.accept();
             InputStreamReader entrada = new InputStreamReader(cliente.socket.getInputStream());
             BufferedReader le = new BufferedReader(entrada);
             String resposta = le.readLine();
-            
-            String[] res = resposta.split("#");            
+
+            String[] res = resposta.split("#");
             cliente.setResumoLabel(res[0]);//Opcões info
             cliente.setBytesEnviadosLabel(res[1]);// Qtd bytes recebidos
             cliente.setBytesRecebidosLabel(res[2]);// Qtd bytes enviados
             cliente.setJitterLabel(res[3]);// Jitter info
             cliente.setPerdaLabel(res[4]);// Perdas
             cliente.setTaxaTransLabel(res[5]);// Taxa de transf
-            
+
             System.out.println(resposta);
         } catch (BindException e) {
             System.out.println("Endereço ocupado");
@@ -589,9 +588,9 @@ public class Cliente extends javax.swing.JFrame {
     private javax.swing.JTextField tamanhoMsg;
     private javax.swing.JLabel taxaTransLabel;
     private javax.swing.JTextField totalBytes;
-	String a = "a.st1.ntp.br";
     // End of variables declaration//GEN-END:variables
     ServerSocket tmpSocket;
     Socket socket;
     long tempPrimeiro;
+    String a = "a.st1.ntp.br";
 }

@@ -8,15 +8,13 @@ import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
+import util.NTPUDPClient;
+import util.TimeInfo;
 
 public class Servidor extends javax.swing.JFrame {
 
@@ -25,8 +23,6 @@ public class Servidor extends javax.swing.JFrame {
         this.receberDados = new byte[2000];
         initComponents();
     }
-
-    String a = "a.st1.ntp.br";
 
     private long getWebTime(String address) {
         try {
@@ -162,7 +158,7 @@ public class Servidor extends javax.swing.JFrame {
         final Servidor servidor = new Servidor();
         int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, pacotesEnviados = 0, pacotesRecebidos = 0, tamMsg = 0;
         double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
-        int contadorDeJitter = 0, nSeqPacoteAnterior = 0;
+        int contadorDeJitter = 0, nSeqPacoteAnterior = 0, contadorLoop = 0;
         double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
         boolean temDados = false;
         String ipCliente = "", endereco = "a.st1.ntp.br", tempoSaidaCliente = "";
@@ -194,10 +190,10 @@ public class Servidor extends javax.swing.JFrame {
                     }
                 }
                 for (int i = 7; i < 15; i++) {
-                	int p = 0;
-                	p = (int)pacote[i];
-                	tempoSaidaCliente += (char)p;
-				}
+                    int p = 0;
+                    p = (int) pacote[i];
+                    tempoSaidaCliente += (char) p;
+                }
                 temDados = true;
             }
 
@@ -229,14 +225,13 @@ public class Servidor extends javax.swing.JFrame {
                 p6 = p6 + 256;
             }
 
-            qntddBytes = p1 + p2;
-            opcaoValor = p3 + p4;
-            nSeqPacoteAnterior = p5 + p6;
+            qntddBytes = p1 * 255 + p2;
+            opcaoValor = p3 * 255 + p4;
+            nSeqPacoteAnterior = p5 * 255 + p6;
 
             ipCliente = receberPacote.getAddress().getHostAddress();
             portaCliente = receberPacote.getPort();
-            
-            System.out.println(qntddBytes + " " + opcaoValor + " " + nSeqPacoteAnterior);
+
             qteBytesRecebidos += tamMsg;
 
             byte cabecalho = pacote[0];
@@ -245,7 +240,6 @@ public class Servidor extends javax.swing.JFrame {
             //Calcular o Jitter
             tempAtual = System.currentTimeMillis();
             if (nSeqPacoteAnterior == pacote[4] - 1) {
-                System.out.println("Pacote: " + pacote[4]);
                 double jitter = tempAtual - tempAnterior;
                 contadorDeJitter++;
                 if (jitter > jitterMaximo) {
@@ -258,22 +252,16 @@ public class Servidor extends javax.swing.JFrame {
                 tempAnterior = tempAtual;
             }
             //Fim do cÃ¡lculo dos jitters min e max. 
-
-            nSeqPacoteAnterior = (pacote[5] * 255) + pacote[6];
+            if (nSeqPacoteAnterior == 60000) {
+                contadorLoop++;
+            }
+            nSeqPacoteAnterior = (p5 * 255) + (p6);
             String msgDecode = new String(receberPacote.getData(), "UTF-8");
             System.out.println("Pacote recebido " + conti + ": " + Arrays.toString(pacote));
             conti++;
             servidor.serverSocketUDP.setSoTimeout(5000); //set timeout pra 5s
         }
-        int tempoPrimeiroPacote = Integer.parseInt(tempoSaidaCliente);
-        long tempoUltimoPacote = servidor.getWebTime(endereco);
-        tempoUltimoPacote = tempoUltimoPacote%100000000;
-        int tempoUltimoPacoteint = (int)tempoUltimoPacote;
-        double tempoTotal = tempoUltimoPacoteint - tempoPrimeiroPacote;
-        tempoTotal = tempoTotal/1000;
-        double txTransferencia = qntddBytes/tempoTotal;
-        System.out.println("Tempo total: " + tempoTotal);
-        
+        nSeqPacoteAnterior = ((contadorLoop * 60000) + nSeqPacoteAnterior) + 1;
         int opt = 0;
 
         if (opcao == 1 || opcao == 17) { //opção: nº de pacotes
@@ -288,9 +276,18 @@ public class Servidor extends javax.swing.JFrame {
             pacotesEnviados = nSeqPacoteAnterior;
             System.out.println("OPCAO 3");
             opt = 3;
+            qntddBytes = (nSeqPacoteAnterior - 1) * tamMsg;
         } else {
             System.out.println("Erro no cálculo de pacotes enviados");
         }
+        int tempoPrimeiroPacote = Integer.parseInt(tempoSaidaCliente);
+        long tempoUltimoPacote = servidor.getWebTime(endereco);
+        tempoUltimoPacote = tempoUltimoPacote % 100000000;
+        int tempoUltimoPacoteint = (int) tempoUltimoPacote;
+        double tempoTotal = tempoUltimoPacoteint - tempoPrimeiroPacote;
+        tempoTotal = tempoTotal / 1000;
+        double txTransferencia = qntddBytes / tempoTotal;
+        System.out.println("Tempo total: " + tempoTotal); 
 
         if (contadorDeJitter == 1) { //SÃ“ RECEBEU 1 PACOTE
             jitterMinimo = 0;
@@ -300,19 +297,26 @@ public class Servidor extends javax.swing.JFrame {
             jitterMedio = somaJitter / contadorDeJitter;
         }
 
-        String jitterInfo = "Jitter mínimo: " + new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN) + " Jitter máximo: " + new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN) + " Jitter médio: " + new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN);
+        BigDecimal jitterMin = new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN); //Precisão de 2 casas
+        BigDecimal jitterMax = new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN);
+        BigDecimal jitterMed = new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN);
+        String taxaTransf = String.format(String.valueOf(txTransferencia), "%.2f");
+
+        //BigDecimal taxaTransf = new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN);
+        String jitterInfo = "Jitter mínimo: " + jitterMin + " Jitter máximo: " + jitterMax + " Jitter médio: " + jitterMed;
         String opcoesInfo = "O cliente escolheu a opção " + opt + "";
-        int perdaPacotesPor = 100 - (int) Math.floor((pacotesRecebidos * 100) / pacotesEnviados);
-        System.out.println(pacotesRecebidos);
-        System.out.println(pacotesEnviados);
-        System.out.println(perdaPacotesPor + "%");
+        System.out.println("Parte 1: " + pacotesRecebidos);
+        System.out.println("Parte 2: " + pacotesEnviados);
+        double perdaPacotesPor = 100 - ((pacotesRecebidos / pacotesEnviados) * 100);
+        BigDecimal perdaPacotes = new BigDecimal(String.valueOf(perdaPacotesPor)).setScale(2, RoundingMode.DOWN);//Precisao perda de pacotes
+        //System.out.printf("%.2f", perdaPacotesPor + "%");
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
-        servidor.jitterLabel.setText("<html>"+ "Jitter mínimo: " + new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN) + "<br/> Jitter máximo: " + new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN) + "<br/> Jitter médio: " + new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN) + "</html>");
+        servidor.jitterLabel.setText("<html>" + "Jitter mínimo: " + jitterMin + "<br/> Jitter máximo: " + jitterMax + "<br/> Jitter médio: " + jitterMed + "</html>");
         servidor.resumoOpcoesLabel.setText(opcoesInfo);
         servidor.bytesRecebidosLabel.setText(Integer.toString(qteBytesRecebidos));
-        servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
-        servidor.taxaTransLabel.setText((new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN)).toPlainString());
-        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo +"#" + Double.toString(perdaPacotesPor) + "#" + new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN) + "\n";
+        servidor.perdaPacotesLabel.setText(String.valueOf(perdaPacotes));
+        servidor.taxaTransLabel.setText(taxaTransf + " bps");
+        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo + "#" + perdaPacotes + "#" + taxaTransf + " bps\n";
         try {
             servidor.socket = new Socket(ipCliente, 3005);
             DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
@@ -345,4 +349,5 @@ public class Servidor extends javax.swing.JFrame {
     byte[] receberDados;
     int porta = 3002, portaCliente;
     String ipCliente;
+    String a = "a.st1.ntp.br";
 }
