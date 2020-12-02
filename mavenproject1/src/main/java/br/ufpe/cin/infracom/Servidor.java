@@ -2,6 +2,8 @@ package br.ufpe.cin.infracom;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -271,16 +273,21 @@ public class Servidor extends javax.swing.JFrame {
         tempoTotal = tempoTotal/1000;
         double txTransferencia = qntddBytes/tempoTotal;
         System.out.println("Tempo total: " + tempoTotal);
+        
+        int opt = 0;
 
         if (opcao == 1 || opcao == 17) { //opção: nº de pacotes
             pacotesEnviados = opcaoValor;
             System.out.println("OPCAO 1");
+            opt = 1;
         } else if (opcao == 2 || opcao == 18) { //opção: totalbytes
             pacotesEnviados = (int) Math.ceil(qntddBytes / tamMsg);
             System.out.println("OPCAO 2");
+            opt = 2;
         } else if (opcao == 3 || opcao == 19) { //opção: tempo
             pacotesEnviados = nSeqPacoteAnterior;
             System.out.println("OPCAO 3");
+            opt = 3;
         } else {
             System.out.println("Erro no cálculo de pacotes enviados");
         }
@@ -293,18 +300,19 @@ public class Servidor extends javax.swing.JFrame {
             jitterMedio = somaJitter / contadorDeJitter;
         }
 
-        String jitterInfo = "Jitter mínimo: " + jitterMinimo + "\n Jitter máximo: " + jitterMaximo + "\n Jitter médio: " + jitterMedio + "";
-        String opcoesInfo = "O cliente escolheu a opção " + opcaoValor + "";
+        String jitterInfo = "Jitter mínimo: " + new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN) + " Jitter máximo: " + new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN) + " Jitter médio: " + new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN);
+        String opcoesInfo = "O cliente escolheu a opção " + opt + "";
         int perdaPacotesPor = 100 - (int) Math.floor((pacotesRecebidos * 100) / pacotesEnviados);
         System.out.println(pacotesRecebidos);
         System.out.println(pacotesEnviados);
         System.out.println(perdaPacotesPor + "%");
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
-        servidor.jitterLabel.setText(jitterInfo);
+        servidor.jitterLabel.setText("<html>"+ "Jitter mínimo: " + new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN) + "<br/> Jitter máximo: " + new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN) + "<br/> Jitter médio: " + new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN) + "</html>");
         servidor.resumoOpcoesLabel.setText(opcoesInfo);
         servidor.bytesRecebidosLabel.setText(Integer.toString(qteBytesRecebidos));
         servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
-        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + txTransferencia + "%";
+        servidor.taxaTransLabel.setText((new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN)).toPlainString());
+        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo +"#" + Double.toString(perdaPacotesPor) + "#" + new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN) + "\n";
         try {
             servidor.socket = new Socket(ipCliente, 3005);
             DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
