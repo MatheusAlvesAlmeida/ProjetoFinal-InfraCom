@@ -156,8 +156,8 @@ public class Servidor extends javax.swing.JFrame {
 
     public static void main(String args[]) throws SocketException, IOException {
         final Servidor servidor = new Servidor();
-        int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, pacotesEnviados = 0, pacotesRecebidos = 0, tamMsg = 0;
-        double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
+        int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, tamMsg = 0;
+        double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis(),  pacotesEnviados = 0, pacotesRecebidos = 0;
         int contadorDeJitter = 0, nSeqPacoteAnterior = 0, contadorLoop = 0;
         double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
         boolean temDados = false;
@@ -308,6 +308,7 @@ public class Servidor extends javax.swing.JFrame {
         System.out.println("Parte 1: " + pacotesRecebidos);
         System.out.println("Parte 2: " + pacotesEnviados);
         double perdaPacotesPor = 100 - ((pacotesRecebidos / pacotesEnviados) * 100);
+        System.out.println("perda de pacotes por" + perdaPacotesPor);
         BigDecimal perdaPacotes = new BigDecimal(String.valueOf(perdaPacotesPor)).setScale(2, RoundingMode.DOWN);//Precisao perda de pacotes
         //System.out.printf("%.2f", perdaPacotesPor + "%");
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
