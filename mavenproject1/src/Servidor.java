@@ -160,12 +160,12 @@ public class Servidor extends javax.swing.JFrame {
 
     public static void main(String args[]) throws SocketException, IOException {
         final Servidor servidor = new Servidor();
-        int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, pacotesEnviados = 0, pacotesRecebidos = 0, tamMsg = 0;
-        double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis();
+        int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, tamMsg = 0;
+        double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis(), pacotesEnviados = 0, pacotesRecebidos = 0;
         int contadorDeJitter = 0, nSeqPacoteAnterior = 0;
         double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
         boolean temDados = false;
-        String ipCliente = "", endereco = "a.st1.ntp.br", tempoSaidaCliente = "";
+        String ipCliente = "", endereco = "a.st1.ntp.br", tempoSaidaCliente = "0";
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -173,7 +173,7 @@ public class Servidor extends javax.swing.JFrame {
             }
         });
 
-        int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0, p7 = 0;
+        int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
 
         servidor.serverSocketUDP.setSoTimeout(60000); //set timeout 1 minuto para poder digitar
         while (bitFlag != 1) {
@@ -193,7 +193,7 @@ public class Servidor extends javax.swing.JFrame {
                         i = pacote.length;
                     }
                 }
-                for (int i = 8; i < 16; i++) {
+                for (int i = 7; i < 15; i++) {
                 	int p = 0;
                 	p = (int)pacote[i];
                 	tempoSaidaCliente += (char)p;
@@ -209,7 +209,6 @@ public class Servidor extends javax.swing.JFrame {
             p4 = (int) pacote[4];
             p5 = (int) pacote[5];
             p6 = (int) pacote[6];
-            p7 = (int) pacote[7];
 
             if (p1 < 0) {
                 p1 = p1 + 256;
@@ -229,13 +228,11 @@ public class Servidor extends javax.swing.JFrame {
             if (p6 < 0) {
                 p6 = p6 + 256;
             }
-            if (p7 < 0) {
-            	p7 = p7 + 256;
-            }
 
-            qntddBytes = p1 + p2;
-            opcaoValor = p3 + p4;
-            nSeqPacoteAnterior = p5 + p6 + p7;
+
+            qntddBytes = p1*255 + p2;
+            opcaoValor = p3*255 + p4;
+            nSeqPacoteAnterior = p5*255 + p6;
 
             ipCliente = receberPacote.getAddress().getHostAddress();
             portaCliente = receberPacote.getPort();
@@ -263,12 +260,13 @@ public class Servidor extends javax.swing.JFrame {
             }
             //Fim do cÃ¡lculo dos jitters min e max. 
 
-            nSeqPacoteAnterior = (p5 * 255 * 255) + (p6 * 255) + p7;
+            nSeqPacoteAnterior = (p5 * 255) + (p6);
             String msgDecode = new String(receberPacote.getData(), "UTF-8");
             System.out.println("Pacote recebido " + conti + ": " + Arrays.toString(pacote));
             conti++;
-            servidor.serverSocketUDP.setSoTimeout(50000); //set timeout pra 5s
+            servidor.serverSocketUDP.setSoTimeout(5000); //set timeout pra 5s
         }
+        nSeqPacoteAnterior++;
         int tempoPrimeiroPacote = Integer.parseInt(tempoSaidaCliente);
         long tempoUltimoPacote = servidor.getWebTime(endereco);
         tempoUltimoPacote = tempoUltimoPacote%100000000;
@@ -304,23 +302,22 @@ public class Servidor extends javax.swing.JFrame {
             jitterMedio = somaJitter / contadorDeJitter;
         }
 
-        String jitterInfo = "Jitter mínimo: " + new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN) + " Jitter máximo: " + new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN) + " Jitter médio: " + new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN);
+        String jitterInfo = "Jitter mínimo: " + jitterMinimo+ " Jitter máximo: " + jitterMaximo + " Jitter médio: " + jitterMedio;
         String opcoesInfo = "O cliente escolheu a opção " + opt + "";
-        int perdaPacotesPor = 100 - (int) Math.floor((pacotesRecebidos * 100) / pacotesEnviados);
-        System.out.println(pacotesRecebidos);
-        System.out.println(pacotesEnviados);
-        System.out.println(perdaPacotesPor + "%");
+        System.out.println("Parte 1: " + pacotesRecebidos);
+        System.out.println("Parte 2: " + pacotesEnviados);
+        double perdaPacotesPor = 100 - ((pacotesRecebidos / pacotesEnviados)*100);
+        System.out.printf("%.2f", perdaPacotesPor + "%");
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
-        servidor.jitterLabel.setText("<html>"+ "Jitter mínimo: " + new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN) + "<br/> Jitter máximo: " + new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN) + "<br/> Jitter médio: " + new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN) + "</html>");
+        servidor.jitterLabel.setText("<html>"+ "Jitter mínimo: " + jitterMinimo + "<br/> Jitter máximo: "+ jitterMaximo + "<br/> Jitter médio: " +jitterMedio + "</html>");
         servidor.resumoOpcoesLabel.setText(opcoesInfo);
         servidor.bytesRecebidosLabel.setText(Integer.toString(qteBytesRecebidos));
         servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
-        servidor.taxaTransLabel.setText((new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN)).toPlainString());
-        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo +"#" + Double.toString(perdaPacotesPor) + "#" + new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN) + "\n";
-        try {
-            servidor.socket = new Socket(ipCliente, 3005);
-            DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
-            saida.write(enviar.getBytes());
+        servidor.taxaTransLabel.setText(Double.toString(txTransferencia));
+        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo +"#" + Double.toString(perdaPacotesPor) + "#" + Double.toString(txTransferencia) + "\n";        try {
+        servidor.socket = new Socket(ipCliente, 3005);
+        DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
+        saida.write(enviar.getBytes());
         } catch (ConnectException e) {
             System.out.println("Não foi possível chegar ao destinatário");
         } catch (Exception e) {
