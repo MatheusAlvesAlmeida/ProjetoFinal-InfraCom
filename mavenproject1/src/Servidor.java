@@ -173,7 +173,7 @@ public class Servidor extends javax.swing.JFrame {
             }
         });
 
-        int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
+        int conti = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0, p7 = 0;
 
         servidor.serverSocketUDP.setSoTimeout(60000); //set timeout 1 minuto para poder digitar
         while (bitFlag != 1) {
@@ -193,7 +193,7 @@ public class Servidor extends javax.swing.JFrame {
                         i = pacote.length;
                     }
                 }
-                for (int i = 7; i < 15; i++) {
+                for (int i = 8; i < 16; i++) {
                 	int p = 0;
                 	p = (int)pacote[i];
                 	tempoSaidaCliente += (char)p;
@@ -209,6 +209,7 @@ public class Servidor extends javax.swing.JFrame {
             p4 = (int) pacote[4];
             p5 = (int) pacote[5];
             p6 = (int) pacote[6];
+            p7 = (int) pacote[7];
 
             if (p1 < 0) {
                 p1 = p1 + 256;
@@ -228,10 +229,13 @@ public class Servidor extends javax.swing.JFrame {
             if (p6 < 0) {
                 p6 = p6 + 256;
             }
+            if (p7 < 0) {
+            	p7 = p7 + 256;
+            }
 
             qntddBytes = p1 + p2;
             opcaoValor = p3 + p4;
-            nSeqPacoteAnterior = p5 + p6;
+            nSeqPacoteAnterior = p5 + p6 + p7;
 
             ipCliente = receberPacote.getAddress().getHostAddress();
             portaCliente = receberPacote.getPort();
@@ -259,11 +263,11 @@ public class Servidor extends javax.swing.JFrame {
             }
             //Fim do cÃ¡lculo dos jitters min e max. 
 
-            nSeqPacoteAnterior = (pacote[5] * 255) + pacote[6];
+            nSeqPacoteAnterior = (p5 * 255 * 255) + (p6 * 255) + p7;
             String msgDecode = new String(receberPacote.getData(), "UTF-8");
             System.out.println("Pacote recebido " + conti + ": " + Arrays.toString(pacote));
             conti++;
-            servidor.serverSocketUDP.setSoTimeout(5000); //set timeout pra 5s
+            servidor.serverSocketUDP.setSoTimeout(50000); //set timeout pra 5s
         }
         int tempoPrimeiroPacote = Integer.parseInt(tempoSaidaCliente);
         long tempoUltimoPacote = servidor.getWebTime(endereco);
