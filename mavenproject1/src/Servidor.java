@@ -302,19 +302,27 @@ public class Servidor extends javax.swing.JFrame {
             jitterMedio = somaJitter / contadorDeJitter;
         }
 
-        String jitterInfo = "Jitter mínimo: " + jitterMinimo+ " Jitter máximo: " + jitterMaximo + " Jitter médio: " + jitterMedio;
+        BigDecimal jitterMin = new BigDecimal(String.valueOf(jitterMinimo)).setScale(2, RoundingMode.DOWN); //Precisão de 2 casas
+        BigDecimal jitterMax = new BigDecimal(String.valueOf(jitterMaximo)).setScale(2, RoundingMode.DOWN);
+        BigDecimal jitterMed = new BigDecimal(String.valueOf(jitterMedio)).setScale(2, RoundingMode.DOWN);
+        String taxaTransf = String.format(String.valueOf(txTransferencia), "%.2f");
+        
+        //BigDecimal taxaTransf = new BigDecimal(String.valueOf(txTransferencia)).setScale(2, RoundingMode.DOWN);
+        String jitterInfo = "Jitter mínimo: " + jitterMin + " Jitter máximo: " + jitterMax + " Jitter médio: " + jitterMed;
         String opcoesInfo = "O cliente escolheu a opção " + opt + "";
         System.out.println("Parte 1: " + pacotesRecebidos);
         System.out.println("Parte 2: " + pacotesEnviados);
         double perdaPacotesPor = 100 - ((pacotesRecebidos / pacotesEnviados)*100);
-        System.out.printf("%.2f", perdaPacotesPor + "%");
+        BigDecimal perdaPacotes = new BigDecimal(String.valueOf(perdaPacotesPor)).setScale(2, RoundingMode.DOWN);//Precisao perda de pacotes
+        //System.out.printf("%.2f", perdaPacotesPor + "%");
         servidor.bytesEnviadosLabel.setText(Integer.toString(qntddBytes));
-        servidor.jitterLabel.setText("<html>"+ "Jitter mínimo: " + jitterMinimo + "<br/> Jitter máximo: "+ jitterMaximo + "<br/> Jitter médio: " +jitterMedio + "</html>");
+        servidor.jitterLabel.setText("<html>"+ "Jitter mínimo: " + jitterMin + "<br/> Jitter máximo: "+ jitterMax + "<br/> Jitter médio: " +jitterMed + "</html>");
         servidor.resumoOpcoesLabel.setText(opcoesInfo);
         servidor.bytesRecebidosLabel.setText(Integer.toString(qteBytesRecebidos));
-        servidor.perdaPacotesLabel.setText(Double.toString(perdaPacotesPor));
-        servidor.taxaTransLabel.setText(Double.toString(txTransferencia));
-        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo +"#" + Double.toString(perdaPacotesPor) + "#" + Double.toString(txTransferencia) + "\n";        try {
+        servidor.perdaPacotesLabel.setText(String.valueOf(perdaPacotes));
+        servidor.taxaTransLabel.setText(taxaTransf);
+        String enviar = "" + opcoesInfo + "#" + Integer.toString(qntddBytes) + "#" + Integer.toString(qteBytesRecebidos) + "#" + jitterInfo +"#" + perdaPacotes + "#" + taxaTransf + "\n";       
+        try {
         servidor.socket = new Socket(ipCliente, 3005);
         DataOutputStream saida = new DataOutputStream(servidor.socket.getOutputStream());
         saida.write(enviar.getBytes());
