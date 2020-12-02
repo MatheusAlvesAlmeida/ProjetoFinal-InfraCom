@@ -505,17 +505,15 @@ public class Cliente extends javax.swing.JFrame {
         dados[4] = (byte) opcaoValor;
         dados[5] = (byte) Math.floor(numSequencia / 255);
         numSequencia = numSequencia % 255;
-        dados[6] = (byte) Math.floor(numSequencia/255);
-        numSequencia = numSequencia % 255;
-        dados[7] = (byte) Math.floor(numSequencia);
+        dados[6] = (byte) Math.floor(numSequencia);
 
-        if (dados[5] == 0 && dados[6] == 0 && dados[7] == 0 || dados[5] == 0 && dados[6] == 0 && dados[7] == 1 || dados[5] == 0 && dados[6] == 0 && dados[7] == 2) {
+        if (dados[5] == 0 && dados[6] == 0 || dados[5] == 0 && dados[6] == 1|| dados[5] == 0 && dados[6] == 2) {
             this.tempPrimeiro = this.getWebTime(this.a);
             System.out.println("Tempo de saída do cliente: " + tempPrimeiro);
             String str = tempPrimeiro + "";
             for (int i = 5; i < str.length(); i++) {
             	System.out.println(str.charAt(i));
-    			dados[i + 3] = (byte) str.charAt(i);
+    			dados[i + 2] = (byte) str.charAt(i);
     		}
         }
         int x = Integer.parseInt(this.tamanhoMsg.getText()) - 1;
