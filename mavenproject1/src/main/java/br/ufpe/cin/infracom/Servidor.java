@@ -16,6 +16,13 @@ import java.util.Arrays;
 import util.NTPUDPClient;
 import util.TimeInfo;
 
+/**
+ *
+ * @author Matheus Alves Almeida (maa4), Eduardo Siqueira Conti (esc3), José Guilherme Nascimento Vieira da Silva (jgnvs),
+ * Paulo Matheus Santiago Dos Santos Melo (pmssm), Luís Carlos Lacerda Durans (lcld), Gabriel Nogueira Leite (gnl2),
+ * Maria Clara Dionisio Amaral Gois (mcdag).
+ */
+
 public class Servidor extends javax.swing.JFrame {
 
     public Servidor() throws SocketException, IOException {
@@ -157,9 +164,9 @@ public class Servidor extends javax.swing.JFrame {
     public static void main(String args[]) throws SocketException, IOException {
         final Servidor servidor = new Servidor();
         int qntddBytes = 0, opcao = 0, opcaoValor = 0, bitFlag = 0, portaCliente = 0, qteBytesRecebidos = 0, tamMsg = 0;
-        double tempAnterior = System.currentTimeMillis(), tempAtual = System.currentTimeMillis(),  pacotesEnviados = 0, pacotesRecebidos = 0;
-        int contadorDeJitter = 0, nSeqPacoteAnterior = 0, contadorLoop = 0;
-        double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio, somaJitter = 0;
+        double tempAnterior = System.currentTimeMillis(), contadorDeJitter = 0, tempAtual = System.currentTimeMillis(),  pacotesEnviados = 0, pacotesRecebidos = 0;
+        int nSeqPacoteAnterior = 0, contadorLoop = 0;
+        double jitterMinimo = Double.MAX_VALUE, jitterMaximo = 0, jitterMedio = 0, somaJitter = 0;
         boolean temDados = false;
         String ipCliente = "", endereco = "a.st1.ntp.br", tempoSaidaCliente = "";
 

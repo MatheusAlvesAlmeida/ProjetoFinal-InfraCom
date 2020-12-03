@@ -20,8 +20,11 @@ import util.TimeInfo;
 
 /**
  *
- * @author matheus
+ * @author Matheus Alves Almeida (maa4), Eduardo Siqueira Conti (esc3), José Guilherme Nascimento Vieira da Silva (jgnvs),
+ * Paulo Matheus Santiago Dos Santos Melo (pmssm), Luís Carlos Lacerda Durans (lcld), Gabriel Nogueira Leite (gnl2),
+ * Maria Clara Dionisio Amaral Gois (mcdag).
  */
+
 public class Cliente extends javax.swing.JFrame {
 
     public Cliente() {
@@ -535,7 +538,7 @@ public class Cliente extends javax.swing.JFrame {
             InputStreamReader entrada = new InputStreamReader(cliente.socket.getInputStream());
             BufferedReader le = new BufferedReader(entrada);
             String resposta = le.readLine();
-
+            
             String[] res = resposta.split("#");
             cliente.setResumoLabel(res[0]);//Opcões info
             cliente.setBytesEnviadosLabel(res[1]);// Qtd bytes recebidos
